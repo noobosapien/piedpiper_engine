@@ -17,3 +17,6 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.urls]
+Homepage = "https://github.com/noobosapien/piedpiper_engine"
+Issues = "https://github.com/noobosapien/piedpiper_engine/issues"
