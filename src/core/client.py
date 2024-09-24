@@ -1,12 +1,12 @@
-from piedpiper_engine.engine import Engine
+import uuid
 
 
 class Client:
     def __init__(self):
-        self._engine: Engine = None
-        self._id = None
+        self._engine = None
+        self._id = uuid.uuid4().hex
 
-    def add_engine(self, engine: Engine):
+    def add_engine(self, engine):
         if self._engine is None:
             self._engine = engine
 

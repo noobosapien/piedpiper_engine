@@ -1,4 +1,4 @@
-from agent_queue import AgentQueue
+from .agent_queue import AgentQueue
 
 
 class ClientManager:

@@ -1,5 +1,6 @@
-from typing import List, Dict
+from typing import Dict
 from multiprocessing import Process, Value
+from ctypes import c_bool
 
 from core.client import Client
 from core.client_queue import ClientQueue
@@ -16,20 +17,23 @@ class Engine:
     _client_manager = ClientManager()
 
     _loop_process: Process = None
-    _set_quit_loop = Value("b", False)
+    _set_quit_loop = Value(c_bool, False)
 
     def __init__(self):
         pass
 
-    def __find_client_queue__(self, client_id) -> ClientQueue:
-        for id, queues in self._all_queues:
+    def _find_client_queue_(self, client_id) -> ClientQueue:
+        for id, queues in self._all_queues.items():
             if id == client_id:
-                return queues[0]
+                return list(queues.keys())[0]
 
         return None
 
+    def clear_queues(self):
+        self._all_queues = {}
+
     def add_client(self, client: Client):
-        cl = self.__find_client_queue__(client._id)
+        cl = self._find_client_queue_(client._id)
 
         if cl is not None:
             return
@@ -44,7 +48,7 @@ class Engine:
         del self._all_queues[client._id]
 
     def add_message(self, client_id, input):
-        cq = self.__find_client_queue__(client_id)
+        cq = self._find_client_queue_(client_id)
 
         if cq is not None:
             cq.add_message(input)
@@ -59,7 +63,7 @@ class Engine:
                     if not cq.is_empty():
                         self._agent_manager.to_process(cq)
                     if not aq.is_empty():
-                        self._client_manager.to_process(aq)
+                        self._client_manager.to_process(aq)  # Optional
 
     def loop(self):
         self._loop_process = Process(target=self.process)
