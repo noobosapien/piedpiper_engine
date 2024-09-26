@@ -26,6 +26,13 @@ def test_getting_two_messages_after_adding_one_will_give_none_last():
     assert client_queue.get_next_message() is None
 
 
+def test_getting_the_correct_client_id():
+    client: Client = Client()
+    client_queue: ClientQueue = ClientQueue(client)
+
+    assert client_queue.get_client_id() == client._id
+
+
 def test_able_to_add_messages():
     client: Client = Client()
     client_queue: ClientQueue = ClientQueue(client)

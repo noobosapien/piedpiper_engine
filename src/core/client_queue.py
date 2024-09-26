@@ -17,6 +17,9 @@ class ClientQueue:
             return True
         return False
 
+    def get_client_id(self):
+        return self._client._id
+
     def add_message(self, input: str):
         self._messages.append(input)
 
