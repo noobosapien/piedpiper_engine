@@ -1,25 +1,41 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import functools
 
-from typing import Dict, List
-
-from .client_queue import ClientQueue
 from .agent import Agent
-from .agent_manager_thread import AgentManagerThread
-from .agent_processor import AgentProcessor
+from .client import Client
+from .client_queue import ClientQueue
+
+
+class NoAgentToClient(Exception):
+    pass
 
 
 class AgentManager:
-    _client_to_agent: Dict[str, List[Agent]] = {}
+    def __init__(self, engine=None):
+        self._engine = engine
+        self.loop = engine.get_loop()
+        self.tasks = []
 
-    def __init__(self):
-        self.loop = asyncio.new_event_loop()
-        self.agent_manager_thread = AgentManagerThread(self.loop)
-        self.agent_manager_thread.start()
-        self.agent_processor = AgentProcessor(self.loop)
-        self.agent_processor.start()
+    async def to_process(self, ctq):
+        with ThreadPoolExecutor() as pool:
+            while ctq.client_queue.is_empty() is False:
+                self.tasks.append(
+                    self.loop.run_in_executor(
+                        pool,
+                        ctq.agents[0].process(
+                            ctq.client_id, ctq.client_queue.get_next_message()
+                        ),
+                    )
+                )
 
-    def to_process(self, client_queue: ClientQueue):
-        pass
+                print("Tasks: ", len(self.tasks))
+                # for task in self.tasks:
+                #     print(task.exception())
 
-    def add_agent(self, client, agent):
+            results = await asyncio.gather(*self.tasks)
+            print(results)
+
+    def quit(self):
+        # self.agent_processor.cancel_all()
         pass

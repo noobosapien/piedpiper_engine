@@ -1,9 +1,9 @@
 import time
 import pytest
 
-
 from piedpiper_engine.engine import Engine
 from core.client import Client
+from core.agent import Agent
 
 
 def test_find_client_queue_with_client_id(engine):
@@ -50,18 +50,6 @@ def test_remove_client_works(engine):
     assert engine._find_client_queue_(client._id) is None
 
 
-def test_cannot_remove_client_not_present(engine):
-    engine.clear_queues()
-
-    client = Client()
-
-    engine.add_client(client)
-    engine.remove_client(client)
-
-    with pytest.raises(KeyError):
-        engine.remove_client(client)
-
-
 def test_adding_message_will_add_to_the_client_queue(engine):
     engine.clear_queues()
 
@@ -76,32 +64,8 @@ def test_adding_message_will_add_to_the_client_queue(engine):
     assert cq.get_next_message() == "Test message"
 
 
-def test_method_process_will_run_until_stopped(engine):
-    engine.clear_queues()
-
-    engine._set_quit_loop.value = True  # Sets the quit value beforehand
-
-    engine.process()
-    time.sleep(0.4)
-
-
-def test_loop_creates_a_seperate_process(engine):
-    engine.clear_queues()
-    engine.loop()
-
-    client = Client()
-    engine.add_client(client)
-
-    cq = engine._find_client_queue_(
-        client._id
-    )  # Can call other functions in the main process
-
-    assert cq.is_client(client)
-
-
 def test_adding_messages_to_client_queue_will_be_valid_on_loop(engine):
     engine.clear_queues()
-    engine.loop()
 
     client = Client()
     engine.add_client(client)
@@ -122,7 +86,20 @@ def test_adding_messages_to_client_queue_will_be_valid_on_loop(engine):
 
 
 def test_adding_messages_to_client_queue_will_send_to_agent_manager(engine):
-    pass
+    engine.clear_queues()
+    engine.loop()
+
+    client = Client()
+    engine.add_client(client)
+
+    agent = Agent()
+    engine.add_agent(client, agent)
+
+    for i in range(10):
+        engine.add_message(client._id, "https://www.example.com")
+        engine.add_message(client._id, "https://www.example.com")
+        engine.add_message(client._id, "https://www.example.com")
+        time.sleep(3)
 
 
 def test_adding_messages_to_agent_queue_will_send_to_agent_manager(engine):

@@ -1,6 +1,10 @@
+from typing import List
+
+
 class AgentQueue:
-    def __init__(self):
-        pass
+    def __init__(self, agent):
+        self._messages: List[str] = []
+        self._agent = agent
 
     def is_agent(self, agent):
         pass

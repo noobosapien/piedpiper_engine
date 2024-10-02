@@ -2,7 +2,7 @@ import pytest
 from piedpiper_engine import Engine
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def engine():
     engine_ = Engine()
     engine_.clear_queues()

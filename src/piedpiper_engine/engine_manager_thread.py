@@ -2,7 +2,7 @@ from asyncio import AbstractEventLoop
 from threading import Thread
 
 
-class AgentManagerThread(Thread):
+class EngineManagerThread(Thread):
     def __init__(self, loop: AbstractEventLoop):
         super().__init__()
         self.loop = loop
