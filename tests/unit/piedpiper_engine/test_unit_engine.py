@@ -1,5 +1,6 @@
 import time
 import pytest
+import random
 
 from piedpiper_engine.engine import Engine
 from core.client import Client
@@ -95,10 +96,9 @@ def test_adding_messages_to_client_queue_will_send_to_agent_manager(engine):
     agent = Agent()
     engine.add_agent(client, agent)
 
-    for i in range(10):
-        engine.add_message(client._id, "https://www.example.com")
-        engine.add_message(client._id, "https://www.example.com")
-        engine.add_message(client._id, "https://www.example.com")
+    for _ in range(5):
+        for i in range(random.randint(10, 60)):
+            engine.add_message(client._id, "https://www.example.com")
         time.sleep(3)
 
 

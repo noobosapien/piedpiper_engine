@@ -1,7 +1,5 @@
 import uuid
 import requests
-import asyncio
-from typing import Callable
 
 
 class Agent:
@@ -14,5 +12,4 @@ class Agent:
 
     def process(self, client_id, client_msg):
         response = requests.get(client_msg)
-        print(response.status_code)
-        return response.status_code
+        return (client_id, response.status_code)
