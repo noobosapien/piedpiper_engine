@@ -19,7 +19,7 @@ def test_client_process_adds_to_engine():
     engine = Engine()
 
     engine.add_client(client)
-    client.process("Test message")
+    engine.add_message(client._id, "Test message")
 
     cq = engine._find_client_queue_(client._id)
 

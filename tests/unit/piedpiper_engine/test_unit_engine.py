@@ -2,9 +2,12 @@ import time
 import pytest
 import random
 
+
 from piedpiper_engine.engine import Engine
 from core.client import Client
 from core.agent import Agent
+from modules.LangchainSyncAgent import LangchainSyncAgent
+from modules.placetime_tools import hof_create_place_time, CreatePlaceTime
 
 
 def test_find_client_queue_with_client_id(engine):
@@ -87,19 +90,39 @@ def test_adding_messages_to_client_queue_will_be_valid_on_loop(engine):
 
 
 def test_adding_messages_to_client_queue_will_send_to_agent_manager(engine):
-    engine.clear_queues()
-    engine.loop()
-
     client = Client()
     engine.add_client(client)
 
-    agent = Agent()
+    agent = LangchainSyncAgent(
+        content=(
+            "You are an assistant who has the job of creating instances of given classes of a timeline told by a story.\n"
+            "CALL THE RELEVANT TOOLS.\n"
+            "For example when you recieve:\n"
+            "'a couple of weeks ago me and my friend at a party and then at about 11pm someone fell down the stairs and broke his neck he was probably drunk, but I think someone pushed him over'\n"
+            "You call the relevant instances using tools for this example:\n"
+            "placetimes_tool with args: place=party, place_vague=false, time=11pm, date=(calculate 2 weeks earlier from today), time_vague=true\n"
+        )
+    )
+
+    agent.add_tool(
+        hof_create_place_time,
+        CreatePlaceTime,
+        "create_place_time",
+        "Create an instance of class Placetime which holds only the information of the time and the place of the event",
+    )
+
     engine.add_agent(client, agent)
 
-    for _ in range(5):
-        for i in range(random.randint(10, 60)):
-            engine.add_message(client._id, "https://www.example.com")
-        time.sleep(3)
+    for _ in range(3):
+        for i in range(random.randint(1, 2)):
+            engine.add_message(
+                client._id, "On the 31st of may at the pub I was with my friend"
+            )
+            engine.add_message(client._id, "last wednsday I was at school with Adam")
+            engine.add_message(client._id, "last week at the mall I was with fred")
+        time.sleep(10)
+
+    time.sleep(5)
 
 
 def test_adding_messages_to_agent_queue_will_send_to_agent_manager(engine):

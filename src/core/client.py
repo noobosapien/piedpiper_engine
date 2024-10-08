@@ -14,6 +14,10 @@ class Client:
         if self._engine is None:
             self._engine = engine
 
-    def process(self, input):
+    def add_message(self, input):
         if self._engine is not None:
             self._engine.add_message(self._id, input)
+
+    def output(self, output):
+        # pass
+        print(output.serialize())

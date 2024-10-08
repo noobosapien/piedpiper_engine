@@ -29,23 +29,20 @@ class AgentManager:
                         pool,
                         functools.partial(
                             ctq.agents[0].process,
-                            ctq.client_id,
+                            ctq.client._id,
                             ctq.client_queue.get_next_message(),
                         ),
                     )
                 )
 
-            # for task in self.tasks:
-            print("Tasks: ", len(self.tasks))
-
-            # results = await asyncio.gather(*self.tasks)
-            for results in asyncio.as_completed(self.tasks):
+            for result in asyncio.as_completed(self.tasks):
                 self.clear_finished_tasks()
 
-                # print(await results)
-                # print(type(results))
-                # await results
-                print(await results)
+                agent_out = await result
+
+                # print("Agent out: ", agent_out[1].serialize())
+
+                self._engine.add_agent_output(agent_out[0], agent_out[1])
 
     def quit(self):
         # self.agent_processor.cancel_all()
