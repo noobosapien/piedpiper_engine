@@ -32,3 +32,23 @@ def test_unit_system_validation():
 
     s.start()
     s.join()
+
+
+def test_unit_system_add_modules():
+    pass
+
+
+def test_unit_system_add_workflows():
+    pass
+
+
+def test_unit_system_process_events():
+    pass
+
+
+def test_unit_system_sends_and_waits_event():
+    pass
+
+
+def test_unit_system_sends_and_nowait_event():
+    pass

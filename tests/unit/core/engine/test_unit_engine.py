@@ -75,7 +75,6 @@ def test_unit_engine_sends_event_to_correct_system():
 
     eng_queue.put(get_engine_quit_event())
 
-    system.join()
     engine.join()
 
     assert event.id == from_sys.id

@@ -23,3 +23,14 @@ class EventStore:
             events.append(event)
         except KeyError:
             self.system_to_event[event.sys_id] = [event]
+
+    def get_system_from_event(self, event: SystemEvent) -> str:
+        """Gets the id of the system the event belongs to.
+
+        Args:
+            event (SystemEvent): The event to lookup.
+
+        Returns:
+            str: The id of the system the event belongs.
+        """
+        return event.sys_id

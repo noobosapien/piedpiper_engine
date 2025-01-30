@@ -87,7 +87,8 @@ class Engine(Process):
 
                 self.__process_event(event)
 
-            sleep(0.1)
+            else:
+                sleep(0.01)
 
     def __process_event(self, event: SystemEvent) -> None:
         """Private method for processing the recieved events from the in_queue.
@@ -106,12 +107,14 @@ class Engine(Process):
 
     def __quit_engine(self) -> None:
         """For every system in the engine send the SystemQuitEvent and wait for the system to break out of the loop
-        and join that process.
+        and close that process.
         """
 
         for _, sys in self.__systems.items():
             sys[1].put(
                 SystemQuitEvent(id="event_" + str(uuid4()), sys_id=sys[0].get_id())
             )
+
+            sys[0].close()
 
             del sys
